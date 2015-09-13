@@ -13,7 +13,7 @@ var currentRoom = 'all';
 
 var send = function(message) {
   $.ajax({
-    url: this.server, 
+    url: this.server+"/messages", 
     type: "POST",
     data: JSON.stringify(message),
     contentType: "application/json",
@@ -29,11 +29,11 @@ var send = function(message) {
 
 var fetch = function() {
   $.ajax({
-    url: this.server,
+    url: this.server+"/messages",
     type: "GET",
     contentType: "application/json",
     success: function(data) {
-      data.results.forEach(function(message){
+      data.forEach(function(message){
         for (var key in message) {
           message[key] = _.escape(message[key]);
         }
@@ -111,9 +111,23 @@ var app = {
       var newRoom = $("#newRoom").val();
       addRoom(newRoom);
     });
+    var sendUser = {newuser: loggedInAs};
+    $.ajax({
+    url: this.server+"/users", 
+    type: "POST",
+    data: JSON.stringify(sendUser),
+    contentType: "application/json",
+    success: function(data) {
+      
+      console.log('chatterbox: user joined');
+    },
+    error: function(data) {
+      console.error('chatterbox: user failed to join');
+    },
+  });
     
   },
-  server: "http://127.0.0.1:3000/classes/messages",
+  server: "http://127.0.0.1:3000/classes",
   send: send,
   fetch: fetch,
   clearMessages: clearMessages,
